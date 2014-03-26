@@ -15,7 +15,7 @@
   - name: Build GDAL with support for java bindings
     shell: 'cd {{ gdal_git_path }}/gdal; {{ item }}'
     with_items:
-      - ./configure --with-java={{ java_path }} --with-jvm-lib={{ java_lib_path }} --with-jvm-lib-add-rpath=yes
+      - ./configure
       - make
       - make install
 
