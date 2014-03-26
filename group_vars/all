@@ -1,0 +1,19 @@
+---
+system_packages:
+  - ant
+  - git
+  - libproj-dev
+  - openjdk-7-jdk
+  - python-dev
+  - swig
+
+local_lib_path: /usr/local/lib
+
+gdal_git_branch: trunk
+gdal_git_url: https://github.com/OSGeo/gdal.git
+gdal_git_path: /home/vagrant/gdal
+
+java_path: /usr/lib/jvm/java-7-openjdk-i386
+java_lib_path: /usr/lib/jvm/java-7-openjdk-i386/jre/lib/i386/server
+java_bindings_path: "{{ gdal_git_path }}/gdal/swig/java"
+java_version: java-1.7.0-openjdk-i386

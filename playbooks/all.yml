@@ -1,0 +1,36 @@
+---
+- hosts: all
+
+  sudo: yes
+
+  tasks:
+
+  - name: Install system packages
+    apt: pkg={{ item }} state=latest update_cache=yes
+    with_items: system_packages
+
+  - name: Download GDAL source from git
+    git: repo={{ gdal_git_url }} version={{ gdal_git_branch }} dest={{ gdal_git_path }}
+
+  - name: Build GDAL with support for java bindings
+    shell: 'cd {{ gdal_git_path }}/gdal; {{ item }}'
+    with_items:
+      - ./configure --with-java={{ java_path }} --with-jvm-lib={{ java_lib_path }} --with-jvm-lib-add-rpath=yes
+      - make
+      - make install
+
+  - name: Write java.opt file for building java bindings
+    template: src=assets/java.opt.j2 dest={{ java_bindings_path }}/java.opt
+
+  - name: Set proper java version
+    shell: update-java-alternatives -s {{ java_version }}
+
+  - name: Build java bindings
+    shell: make chdir={{ java_bindings_path }}
+
+  - name: Install java bindings
+    shell: cp *.so {{ local_lib_path }} chdir={{ java_bindings_path }}
+
+  - name: Run gdalinfo as a test (should display usage -- ignore the ansible failure)
+    shell: java -Djava.library.path="{{ local_lib_path }}" -classpath gdal.jar:build/apps gdalinfo chdir={{ java_bindings_path }}
+    ignore_errors: yes
